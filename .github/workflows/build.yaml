@@ -34,7 +34,9 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@v20
       - name: Install GCC multilib
         if: matrix.platform.arch == 'x86'
-        run: sudo apt-get install gcc-multilib
+        run: |
+          sudo apt update
+          sudo apt-get install gcc-multilib
       - name: Meson Setup
         run: |
           if [ ${{ matrix.platform.arch }} = "x86" ]; then
