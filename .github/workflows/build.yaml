@@ -31,6 +31,7 @@ jobs:
     runs-on: ${{ matrix.platform.runner }}
     steps:
       - uses: actions/checkout@v5
+      - uses: DeterminateSystems/nix-installer-action@v20
       - name: Meson Setup
         run: |
           if [ ${{ matrix.platform.arch }} = "x86" ]; then
