@@ -15,6 +15,7 @@ name: Build
       - 'meson.build'
       - .github/workflows/build.yaml
       - 'flake.lock'
+    tags: ["*.*.*"]
   workflow_dispatch:
 
 jobs:
