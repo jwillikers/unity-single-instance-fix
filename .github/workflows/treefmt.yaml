@@ -1,0 +1,56 @@
+name: Check files with treefmt
+"on":
+  pull_request:
+    branches: ["main"]
+    paths:
+      - '**.c'
+      - '**.cpp'
+      - '**.hpp'
+      - '**.h'
+      - '**.json'
+      - '**.just'
+      - '**.nix'
+      - '**.toml'
+      - '**.yaml'
+      - '**.yml'
+      - '**/.justfile'
+      - '**/CMakeLists.txt'
+      - '**/justfile'
+      - .clang-format
+      - .github/workflows/treefmt.yaml
+      - flake.lock
+      - 'meson.build'
+  push:
+    branches: ["main"]
+    paths:
+      - '**.c'
+      - '**.cpp'
+      - '**.hpp'
+      - '**.h'
+      - '**.json'
+      - '**.just'
+      - '**.nix'
+      - '**.toml'
+      - '**.yaml'
+      - '**.yml'
+      - '**/.justfile'
+      - '**/CMakeLists.txt'
+      - '**/justfile'
+      - .clang-format
+      - .github/workflows/treefmt.yaml
+      - flake.lock
+      - 'meson.build'
+
+jobs:
+  treefmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v19
+      - name: Run treefmt
+        run: nix develop --command treefmt --ci
+      - uses: reviewdog/action-suggester@v1
+        with:
+          fail_on_error: true
+          github_token: ${{ secrets.GH_TOKEN_FOR_UPDATES }}
+          tool_name: treefmt

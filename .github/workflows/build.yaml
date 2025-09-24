@@ -1,0 +1,51 @@
+name: Build
+
+"on":
+  pull_request:
+    branches: ["main"]
+    paths:
+      - '**.c'
+      - 'meson.build'
+      - .github/workflows/build.yaml
+  push:
+    branches: ["main"]
+    paths:
+      - '**.c'
+      - 'meson.build'
+      - .github/workflows/build.yaml
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        platform:
+          - runner: ubuntu-22.04
+            arch: x86
+          - runner: ubuntu-22.04
+            arch: x86_64
+          - runner: ubuntu-22.04-arm
+            arch: aarch64
+    runs-on: ${{ matrix.platform.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Meson Setup
+        run: |
+          if [ ${{ matrix.platform.arch }} = "x86" ]; then
+            meson setup build --buildtype debugoptimized --cross-file meson-cross-x86-linux-gnu
+          else
+            meson setup build --buildtype debugoptimized
+          fi
+      - name: Meson Compile
+        run: meson compile -C build
+      - name: Rename shared library according to architecture
+        run: mv build/libunity-single-instance-fix.so libunity-single-instance-fix-${{ matrix.platform.arch }}.so
+      - uses: actions/upload-artifact@v4
+        with:
+          name: libunity-single-instance-fix-${{ matrix.platform.arch }}.so
+          path: libunity-single-instance-fix-${{ matrix.platform.arch }}.so
+      - name: Upload release artifacts
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: libunity-single-instance-fix-${{ matrix.platform.arch }}.so

@@ -1,0 +1,143 @@
+= Unity Single Instance Fix
+Jordan Williams <jordan@jwillikers.com>
+:experimental:
+:icons: font
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:Fix-for-old-Unity-games-for-Linux-not-starting-anymore: https://ein-eike.de/2025/06/05/fix-for-old-unity-games-for-linux-not-starting-anymore/[Fix for old Unity games for Linux not starting anymore]
+
+image:https://github.com/jwillikers/unity-single-instance-fix/actions/workflows/build.yaml/badge.svg[CI, link=https://github.com/jwillikers/unity-single-instance-fix/actions/workflows/build.yaml]
+
+A fix for the Unity single instance issue on Linux that effects old Unity games.
+The problem and fix are documented in Eike Sauer's blog post  {Fix-for-old-Unity-games-for-Linux-not-starting-anymore}.
+This repository just provides prebuilt binaries for the fix so that you don't have to compile them yourself.
+
+== Usage
+
+This project provides binaries built via GitHub Actions which can be downloaded from the https://github.com/jwillikers/unity-single-instance-fix/releases/[Releases page].
+
+. Download the shared library for the required architecture.
+This command downloads the `x86_64` version of the library.
+There are also `x86` and `aarch64` builds.
++
+[,sh]
+----
+curl --location --remote-name https://github.com/jwillikers/unity-single-instance-fix/releases/download/1.0.0/libunity-single-instance-fix-x86_64.so
+----
+
+. Add the shared library to `LD_PRELOAD` path when running the game.
++
+Command-line::
++
+[,sh]
+----
+LD_PRELOAD=/path/to/libunity-single-instance-fix-x86_64.so ./game.x86_64
+----
+
+Steam launch command::
++
+[,sh]
+----
+LD_PRELOAD=/path/to/libunity-single-instance-fix-x86_64.so %command%
+----
+
+== Develop
+
+For compatibility with glibc, the GitHub Actions builds use the oldest supported Linux runners.
+For development, Nix is used for reproducibility.
+https://nixos.org/[Nix] is used to manage all of the necessary dependencies.
+The `nix develop` command can be used to enter or run commands in an environment with all of the necessary dependencies.
+For convenience, direnv can be used to automatically load this environment when entering the project's directory.
+The https://marketplace.visualstudio.com/items?itemName=mkhl.direnv[mkhl.direnv VSCode extension] integrates this environment in VSCode for development.
+Nix also generates the configuration for https://pre-commit.com/[pre-commit], which automates formatting and various checks when committing changes.
+
+. Install an implementation of Nix, such as https://lix.systems[Lix] used here.
++
+[,sh]
+----
+curl -sSf -L https://install.lix.systems/lix | sh -s -- install
+----
+
+. Clone the source code of this repository locally.
++
+[,sh]
+----
+git clone https://github.com/jwillikers/unity-single-instance-fix.git
+----
+
+. Then change into the project directory.
++
+[,sh]
+----
+cd unity-single-instance-fix
+----
+
+. Install direnv for your system according to the https://direnv.net/docs/installation.html[direnv installation instructions].
++
+[,sh]
+----
+sudo rpm-ostree install direnv
+sudo systemctl reboot
+----
+
+. Integrate direnv with your shell by following the instructions on the https://direnv.net/docs/hook.html[direnv Setup page].
+
+. Permit the direnv configuration in the repository.
++
+[,sh]
+----
+direnv allow
+----
+
+. Build the shared library with Nix or the https://just.systems/[just] command runner.
++
+Nix::
++
+[,sh]
+----
+nix build
+----
+
+just::
++
+[,sh]
+----
+just
+----
+
+== Contributing
+
+Contributions in the form of issues, feedback, and even pull requests are welcome.
+Make sure to adhere to the project's link:CODE_OF_CONDUCT.adoc[Code of Conduct].
+
+== Open Source Software
+
+This project is built on the hard work of countless open source contributors.
+Several of these projects are enumerated below.
+
+* https://asciidoctor.org/[Asciidoctor]
+* https://clang.llvm.org/extra/clang-tidy/[Clang-Tidy]
+* https://clang.llvm.org/docs/ClangFormat.html[ClangFormat]
+* https://gcc.gnu.org/[GCC]
+* https://git-scm.com/[Git]
+* https://www.linuxfoundation.org/[Linux]
+
+== Code of Conduct
+
+The project's Code of Conduct is available in the link:CODE_OF_CONDUCT.adoc[Code of Conduct] file.
+
+== License
+
+This repository is licensed under the MIT license, available in the link:LICENSE[license file].
+The C code is from Eike Sauer's blog post https://ein-eike.de/2025/06/05/fix-for-old-unity-games-for-linux-not-starting-anymore/[Fix for old Unity games for Linux not starting anymore] and is licensed under https://creativecommons.org/licenses/by-nc-sa/3.0/[CC BY-NC-SA].
+
+© 2025 Jordan Williams
+
+== Authors
+
+mailto:{email}[{author}]
