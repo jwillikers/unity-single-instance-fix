@@ -22,12 +22,12 @@ This repository just provides prebuilt binaries for the fix so that you don't ha
 This project provides binaries built via GitHub Actions which can be downloaded from the https://github.com/jwillikers/unity-single-instance-fix/releases/[Releases page].
 
 . Download the shared library for the required architecture.
-This command downloads the `x86_64` version of the library.
+This command downloads the `x86_64` build of the library from the latest release.
 There are also `x86` and `aarch64` builds.
 +
 [,sh]
 ----
-curl --location --remote-name https://github.com/jwillikers/unity-single-instance-fix/releases/download/1.0.0/libunity-single-instance-fix-x86_64.so
+curl --location --remote-name https://github.com/jwillikers/unity-single-instance-fix/releases/latest/download/libunity-single-instance-fix-x86_64.so
 ----
 
 . Add the shared library to `LD_PRELOAD` path when running the game.
