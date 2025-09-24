@@ -28,7 +28,7 @@ jobs:
             arch: aarch64
     runs-on: ${{ matrix.platform.runner }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Meson Setup
         run: |
           if [ ${{ matrix.platform.arch }} = "x86" ]; then
