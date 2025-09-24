@@ -7,12 +7,14 @@ name: Build
       - '**.c'
       - 'meson.build'
       - .github/workflows/build.yaml
+      - 'flake.lock'
   push:
     branches: ["main"]
     paths:
       - '**.c'
       - 'meson.build'
       - .github/workflows/build.yaml
+      - 'flake.lock'
   workflow_dispatch:
 
 jobs:
@@ -32,12 +34,12 @@ jobs:
       - name: Meson Setup
         run: |
           if [ ${{ matrix.platform.arch }} = "x86" ]; then
-            meson setup build --buildtype debugoptimized --cross-file meson-cross-x86-linux-gnu
+            nix develop --command meson setup build --buildtype debugoptimized --cross-file meson-cross-x86-linux-gnu
           else
-            meson setup build --buildtype debugoptimized
+            nix develop --command meson setup build --buildtype debugoptimized
           fi
       - name: Meson Compile
-        run: meson compile -C build
+        run: nix develop --command meson compile -C build
       - name: Rename shared library according to architecture
         run: mv build/libunity-single-instance-fix.so libunity-single-instance-fix-${{ matrix.platform.arch }}.so
       - uses: actions/upload-artifact@v4
