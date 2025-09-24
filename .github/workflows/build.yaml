@@ -20,6 +20,8 @@ name: Build
 
 jobs:
   build:
+    permissions:
+      contents: write
     strategy:
       matrix:
         platform:
