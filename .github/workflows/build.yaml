@@ -51,7 +51,7 @@ jobs:
         run: nix develop --command meson compile -C build
       - name: Rename shared library according to architecture
         run: mv build/libunity-single-instance-fix.so libunity-single-instance-fix-${{ matrix.platform.arch }}.so
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: libunity-single-instance-fix-${{ matrix.platform.arch }}.so
           path: libunity-single-instance-fix-${{ matrix.platform.arch }}.so
