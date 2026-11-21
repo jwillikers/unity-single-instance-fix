@@ -3,11 +3,6 @@ name: Build
 "on":
   pull_request:
     branches: ["main"]
-    paths:
-      - '**.c'
-      - 'meson.build'
-      - .github/workflows/build.yaml
-      - 'flake.lock'
   push:
     branches: ["main"]
     paths:
@@ -18,10 +13,15 @@ name: Build
     tags: ["*.*.*"]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   build:
     permissions:
       contents: write
+      pull-requests: read
     strategy:
       matrix:
         platform:
@@ -33,14 +33,32 @@ jobs:
             arch: aarch64
     runs-on: ${{ matrix.platform.runner }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: DeterminateSystems/nix-installer-action@v20
+      # Always run this job so that required status checks report on every PR,
+      # but only do the work when relevant files changed.
+      - uses: dorny/paths-filter@v4
+        id: filter
+        if: github.event_name == 'pull_request'
+        with:
+          filters: |
+            relevant:
+              - '**.c'
+              - 'meson.build'
+              - .github/workflows/build.yaml
+              - 'flake.lock'
+      - name: Determine whether to run
+        id: gate
+        run: echo "run=${{ github.event_name != 'pull_request' || steps.filter.outputs.relevant == 'true' }}" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v7
+        if: steps.gate.outputs.run == 'true'
+      - uses: DeterminateSystems/nix-installer-action@v23
+        if: steps.gate.outputs.run == 'true'
       - name: Install GCC multilib
-        if: matrix.platform.arch == 'x86'
+        if: steps.gate.outputs.run == 'true' && (matrix.platform.arch == 'x86')
         run: |
           sudo apt update
           sudo apt-get install gcc-multilib
       - name: Meson Setup
+        if: steps.gate.outputs.run == 'true'
         run: |
           if [ ${{ matrix.platform.arch }} = "x86" ]; then
             nix develop --command meson setup build --buildtype debugoptimized --cross-file meson-cross-x86-linux-gnu
@@ -48,15 +66,18 @@ jobs:
             nix develop --command meson setup build --buildtype debugoptimized
           fi
       - name: Meson Compile
+        if: steps.gate.outputs.run == 'true'
         run: nix develop --command meson compile -C build
       - name: Rename shared library according to architecture
+        if: steps.gate.outputs.run == 'true'
         run: mv build/libunity-single-instance-fix.so libunity-single-instance-fix-${{ matrix.platform.arch }}.so
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
+        if: steps.gate.outputs.run == 'true'
         with:
           name: libunity-single-instance-fix-${{ matrix.platform.arch }}.so
           path: libunity-single-instance-fix-${{ matrix.platform.arch }}.so
       - name: Upload release artifacts
-        if: github.ref_type == 'tag'
+        if: steps.gate.outputs.run == 'true' && (github.ref_type == 'tag')
         uses: softprops/action-gh-release@v2
         with:
           files: libunity-single-instance-fix-${{ matrix.platform.arch }}.so
