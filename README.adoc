@@ -136,7 +136,7 @@ The project's Code of Conduct is available in the link:CODE_OF_CONDUCT.adoc[Code
 This repository is licensed under the MIT license, available in the link:LICENSE[license file].
 The C code is from Eike Sauer's blog post https://ein-eike.de/2025/06/05/fix-for-old-unity-games-for-linux-not-starting-anymore/[Fix for old Unity games for Linux not starting anymore] and is licensed under https://creativecommons.org/licenses/by-nc-sa/3.0/[CC BY-NC-SA].
 
-© 2025 Jordan Williams
+© 2025-2026 Jordan Williams
 
 == Authors
 

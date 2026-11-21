@@ -60,12 +60,12 @@
               include-what-you-use
               meson
               just
-              mold-wrapped
+              mold
               ninja
               nushell
               treefmtEval.config.build.wrapper
-              (builtins.attrValues treefmtEval.config.build.programs)
             ]
+            ++ builtins.attrValues treefmtEval.config.build.programs
             ++ pre-commit.enabledPackages;
         };
         formatter = treefmtEval.config.build.wrapper;
